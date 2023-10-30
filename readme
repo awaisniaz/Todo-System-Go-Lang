@@ -1,0 +1,17 @@
+Swagger Setup
+
+1. install go install github.com/swaggo/swag/cmd/swag@latest
+2. run command "swag init"
+3. go get -u github.com/swaggo/http-swagger get this package
+4. import "github.com/swaggo/http-swagger" // http-swagger middleware
+
+Hot Relaoding
+
+1) go install github.com/cosmtrek/air@latest
+2) Air init
+3) Air (command)
+
+
+For Connection with Mongo Db
+1) go get go.mongodb.org/mongo-driver/mongo
+2) go get go.mongodb.org/mongo-driver/bson
