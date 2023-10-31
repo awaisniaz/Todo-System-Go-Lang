@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	DBConnection "github.com/task-manager/DbConnection"
 	Auth "github.com/task-manager/auth"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
@@ -26,14 +29,24 @@ func main() {
 	if err := dbClient.Ping(context.TODO(), readpref.Primary()); err != nil {
 		panic(err)
 	} else {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
 		fmt.Println("DB Connected Successfully... 🚀🚀🚀🚀")
-		dbClient.Database("testing").Collection("users")
+		taskTodoDb := dbClient.Database("Todo-Task")
+		userCollection := taskTodoDb.Collection("Users")
+		// taskCollection := taskTodoDb.Collection("Tasks")
+
+		document := bson.M{"name": "John Doe", "age": 30, "email": "awaisniaz1995@gmail.com"}
+
+		// Insert the document into the collection
+		_, err = userCollection.InsertOne(ctx, document)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	}
 
 	route := mux.NewRouter()
-	// route.PathPrefix("/swagger/*").Handler(httpSwagger.Handler(
-	// 	httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // The Swagger JSON document URL
-	// ))
 	route.PathPrefix("api/v1")
 	route.HandleFunc("/login", Auth.Login).Methods("GET")
 	route.HandleFunc("/register", Auth.Register).Methods("GET")
